@@ -21,4 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/products/', include('product.urls')),
     path('api/users/', include('shopease_user.urls')),
+    path('api/cart/',include('cart.urls')),
+    path('api/wishlist/',include('wishlist.urls'))
 ]

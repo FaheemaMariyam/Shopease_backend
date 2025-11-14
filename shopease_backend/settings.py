@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django_filters',
     'shopease_user',
     'product',
+    'cart',
+    'wishlist',
      
 ]
 
