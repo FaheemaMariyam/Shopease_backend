@@ -38,17 +38,30 @@ class CartView(APIView):
         cart_item.save()
 
         return Response(CartSerializer(cart_item).data, status=200)
+    
+
     #delete the entire cart
     def delete(self,request):
         CartModel.objects.filter(user=request.user).delete()
         return Response({"message": "Cart cleared"}, status=204)
 
-#remove a single cart item based on id
-class CartItemDeleteView(APIView):
-    permission_classes=[permissions.IsAuthenticated]
-    def delete(self,request,item_id):
-        deleted = CartModel.objects.filter(id=item_id, user=request.user).delete()
+#remove or edit a single cart item based on id
+class CartItemView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def patch(self, request, item_id):
+        # Increase or decrease quantity
+        cart_item = CartModel.objects.get(id=item_id, user=request.user)
+        delta = int(request.data.get("delta", 0))
+        cart_item.quantity += delta
+        if cart_item.quantity < 1:
+            cart_item.quantity = 1
+        cart_item.save()
+        return Response(CartSerializer(cart_item).data)
+
+    def delete(self, request, item_id):
+        # Remove single item
+        deleted = CartModel.objects.filter(id=item_id, user=request.user).delete()
         if deleted[0]:
-            return Response({"message":"item deleted successfully"}, status=204)
+            return Response({"message": "Item deleted successfully"}, status=204)
         return Response({"error": "Item not found"}, status=404)

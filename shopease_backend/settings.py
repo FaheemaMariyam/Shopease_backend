@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+"""
+Django settings for shopease_backend project.
+"""
+
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'product',
     'cart',
     'wishlist',
+    'order',
      
 ]
 
