@@ -53,28 +53,3 @@ class ProfileView(APIView):
         user=request.user
         serializer=UserProfileSerializer(user)
         return Response(serializer.data)
-# # REFRESH TOKEN
-# class RefreshTokenView(APIView):
-#     def post(self, request):
-#         from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-
-#         refresh_token = request.COOKIES.get("refresh_token")
-#         if not refresh_token:
-#             return Response({"detail": "No refresh token provided"}, status=status.HTTP_401_UNAUTHORIZED)
-
-#         try:
-#             refresh = RefreshToken(refresh_token)
-#             access_token = str(refresh.access_token)
-#             response = Response({"access_token": access_token}, status=status.HTTP_200_OK)
-#             response.set_cookie(
-#                 key="access_token",
-#                 value=access_token,
-#                 httponly=True,
-#                 secure=False,
-#                 samesite="Lax",
-#             )
-#             return response
-#         except TokenError:
-#             return Response({"detail": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
-def home(request):
-    return HttpResponse("This is home page")
