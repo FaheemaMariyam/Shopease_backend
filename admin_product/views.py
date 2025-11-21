@@ -23,23 +23,33 @@ class AdminProductListView(APIView):
     def get(self, request):
         products = Product.objects.all()
 
-        # --- Search by name ---
+        # --- Search ---
         search = request.query_params.get("search")
         if search:
             products = products.filter(name__icontains=search)
 
-        # --- Sort by price ---
-        ordering = request.query_params.get("ordering")  # 'price' or '-price'
-        if ordering in ['price', '-price']:
+        # --- Category filter ---
+        category = request.query_params.get("category")
+        if category:
+            products = products.filter(category_id=category)
+
+        # --- Sorting ---
+        ordering = request.query_params.get("ordering")
+
+        valid_ordering = ['price', '-price', 'name', '-name']
+
+        if ordering in valid_ordering:
             products = products.order_by(ordering)
         else:
-            products = products.order_by('-id')  # default: newest first
+            products = products.order_by('-id')   # default
 
         # --- Pagination ---
         paginator = self.pagination_class()
         result_page = paginator.paginate_queryset(products, request)
         serializer = ProductSerializer(result_page, many=True)
+
         return paginator.get_paginated_response(serializer.data)
+
     def post(self,request):
         serializer=AdminProductSerializer(data=request.data)
         if serializer.is_valid():
@@ -57,11 +67,20 @@ class AdminProductDetailView(APIView):
 
     def patch(self, request, pk):
         product = get_object_or_404(Product, id=pk)
-        serializer = AdminProductSerializer(product, data=request.data, partial=True)
+
+        serializer = AdminProductSerializer(
+            product,
+            data=request.data,
+            partial=True
+        )
+
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Product updated successfully", "product": serializer.data})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "Product updated successfully",
+                "product": serializer.data
+            })
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
         product = get_object_or_404(Product, id=pk)
