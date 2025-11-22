@@ -16,7 +16,8 @@ class AdminOrderItemSerializer(serializers.ModelSerializer):
 class AdminOrderSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
     items = AdminOrderItemSerializer(many=True, read_only=True)
-
+    status = serializers.CharField(default="Pending")
+    
     class Meta:
         model = Order
         fields = [

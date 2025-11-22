@@ -42,16 +42,20 @@ class OrderListCreateView(APIView):
                 "price": price
             })
 
+        shipping = data.get('shippingDetails', {})
+
         order = Order.objects.create(
-            user=request.user,
-            total_price=total_price,
-            payment_method=data.get('payment_method', 'COD'),
-            name=data.get('name'),
-            address=data.get('address'),
-            city=data.get('city'),
-            pin=data.get('pin'),
-            phone=data.get('phone'),
-        )
+    user=request.user,
+    total_price=total_price,
+    payment_method=data.get('payment_method', 'COD'),
+    name=data.get('name'),        # <- top-level
+    address=data.get('address'),
+    city=data.get('city'),
+    pin=data.get('pin'),
+    phone=data.get('phone'),
+)
+
+
 
         #  BULK CREATE ORDER ITEMS (optimized)
         OrderItem.objects.bulk_create([
