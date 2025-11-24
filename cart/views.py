@@ -13,8 +13,32 @@ class CartView(APIView):
         items=CartModel.objects.filter(user=request.user).select_related("product")
         serializer=CartSerializer(items,many=True)
         return Response(serializer.data)
+    # def post(self, request):
+    #     #Add new item or increase quantity
+    #     product_id = request.data.get("product_id")
+    #     quantity = int(request.data.get("quantity", 1))
+
+    #     if not product_id:
+    #         return Response({"error": "product_id is required"}, status=400)
+
+    #     try:
+    #         product = Product.objects.get(id=product_id)
+    #     except Product.DoesNotExist:
+    #         return Response({"error": "Product not found"}, status=404)
+
+    #     cart_item, created = CartModel.objects.get_or_create(
+    #         user=request.user, product=product
+    #     )
+
+    #     if not created:
+    #         cart_item.quantity += quantity
+    #     else:
+    #         cart_item.quantity = quantity
+
+    #     cart_item.save()
+
+    #     return Response(CartSerializer(cart_item).data, status=200)
     def post(self, request):
-        #Add new item or increase quantity
         product_id = request.data.get("product_id")
         quantity = int(request.data.get("quantity", 1))
 
@@ -26,19 +50,34 @@ class CartView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
 
+    # 🔥 STOCK CHECK
+        if product.stock == 0:
+            return Response({"error": "Sorry this product is out of stock"}, status=400)
+
         cart_item, created = CartModel.objects.get_or_create(
             user=request.user, product=product
         )
 
+    # If item already exists → increase quantity
         if not created:
+            if cart_item.quantity + quantity > product.stock:
+                return Response(
+                    {"error": f"Only {product.stock} left in stock"},
+                    status=400
+                )
             cart_item.quantity += quantity
         else:
+        # New item added
+            if quantity > product.stock:
+                return Response(
+                    {"error": f"Only {product.stock} left in stock"},
+                    status=400
+                )
             cart_item.quantity = quantity
 
         cart_item.save()
-
         return Response(CartSerializer(cart_item).data, status=200)
-    
+   
 
     #delete the entire cart
     def delete(self,request):
@@ -49,14 +88,38 @@ class CartView(APIView):
 class CartItemView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    # def patch(self, request, item_id):
+    #     # Increase or decrease quantity
+    #     cart_item = CartModel.objects.get(id=item_id, user=request.user)
+    #     delta = int(request.data.get("delta", 0))
+    #     cart_item.quantity += delta
+    #     if cart_item.quantity < 1:
+    #         cart_item.quantity = 1
+    #     cart_item.save()
+    #     return Response(CartSerializer(cart_item).data)
     def patch(self, request, item_id):
-        # Increase or decrease quantity
         cart_item = CartModel.objects.get(id=item_id, user=request.user)
         delta = int(request.data.get("delta", 0))
-        cart_item.quantity += delta
-        if cart_item.quantity < 1:
-            cart_item.quantity = 1
+        new_quantity = cart_item.quantity + delta
+
+    # 🔥 STOCK VALIDATION
+        product_stock = cart_item.product.stock
+
+        if product_stock == 0:
+            return Response({"error": "Sorry this product is out of stock"}, status=400)
+
+        if new_quantity > product_stock:
+            return Response(
+                {"error": f"Only {product_stock} left in stock"},
+                status=400
+            )
+
+        if new_quantity < 1:
+            new_quantity = 1
+
+        cart_item.quantity = new_quantity
         cart_item.save()
+
         return Response(CartSerializer(cart_item).data)
 
     def delete(self, request, item_id):

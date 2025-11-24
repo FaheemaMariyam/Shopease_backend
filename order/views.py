@@ -26,15 +26,37 @@ class OrderListCreateView(APIView):
         total_price = 0
         order_items_list = []
 
+        # for item in items:
+        #     try:
+        #         product = Product.objects.get(id=item['product_id'])
+        #     except Product.DoesNotExist:
+        #         return Response({"error": f"Product {item['product_id']} not found"}, status=404)
+
+        #     qty = item.get('quantity', 1)
+        #     price = product.price * qty
+        #     total_price += price
+
+        #     order_items_list.append({
+        #         "product": product,
+        #         "quantity": qty,
+        #         "price": price
+        #     })
         for item in items:
             try:
-                product = Product.objects.get(id=item['product_id'])
+                product = Product.objects.get(id=item["product_id"])
             except Product.DoesNotExist:
-                return Response({"error": f"Product {item['product_id']} not found"}, status=404)
+                return Response({"error": "Product not found"}, status=404)
 
-            qty = item.get('quantity', 1)
+            qty = item["quantity"]
             price = product.price * qty
             total_price += price
+
+    # decrease stock here
+            if product.stock < qty:
+                return Response({"error": f"Sorry, Only {product.stock} left for {product.name}"}, status=400)
+
+            product.stock -= qty
+            product.save()
 
             order_items_list.append({
                 "product": product,
@@ -42,18 +64,20 @@ class OrderListCreateView(APIView):
                 "price": price
             })
 
-        shipping = data.get('shippingDetails', {})
+
+        shipping = data.get("shippingDetails", {})
 
         order = Order.objects.create(
-    user=request.user,
-    total_price=total_price,
-    payment_method=data.get('payment_method', 'COD'),
-    name=data.get('name'),        # <- top-level
-    address=data.get('address'),
-    city=data.get('city'),
-    pin=data.get('pin'),
-    phone=data.get('phone'),
-)
+            user=request.user,
+            total_price=total_price,
+            payment_method=data.get('payment_method', 'COD'),
+            name=shipping.get("name"),
+            address=shipping.get("address"),
+            city=shipping.get("city"),
+            pin=shipping.get("pin"),
+            phone=shipping.get("phone"),
+    )
+
 
 
 
@@ -128,7 +152,15 @@ class VerifyRazorpayPayment(APIView):
         razorpay_payment_id = data.get("razorpay_payment_id")
         razorpay_signature = data.get("razorpay_signature")
         items = data.get("items")
+        # shipping = data.get("shippingDetails", {})
         shipping = data.get("shippingDetails", {})
+
+        name = shipping.get("name")
+        address = shipping.get("address")
+        city = shipping.get("city")
+        pin = shipping.get("pin")
+        phone = shipping.get("phone")
+
 
         if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
             return Response({"error": "Missing Razorpay payment details"}, status=400)
@@ -147,6 +179,21 @@ class VerifyRazorpayPayment(APIView):
         total_price = 0
         order_items_list = []
 
+        # for item in items:
+        #     try:
+        #         product = Product.objects.get(id=item["product_id"])
+        #     except Product.DoesNotExist:
+        #         return Response({"error": "Product not found"}, status=404)
+
+        #     qty = item["quantity"]
+        #     price = product.price * qty
+        #     total_price += price
+
+        #     order_items_list.append({
+        #         "product": product,
+        #         "quantity": qty,
+        #         "price": price
+        #     })
         for item in items:
             try:
                 product = Product.objects.get(id=item["product_id"])
@@ -157,23 +204,43 @@ class VerifyRazorpayPayment(APIView):
             price = product.price * qty
             total_price += price
 
+    # 🔥 decrease stock here
+            if product.stock < qty:
+                return Response({"error": f"Only {product.stock} left for {product.name}"}, status=400)
+
+            product.stock -= qty
+            product.save()
+
             order_items_list.append({
                 "product": product,
                 "quantity": qty,
                 "price": price
             })
 
+
+        # order = Order.objects.create(
+        #     user=request.user,
+        #     total_price=total_price,
+        #     payment_method="RAZORPAY",
+        #     name=shipping.get("name"),
+        #     address=shipping.get("address"),
+        #     city=shipping.get("city"),
+        #     pin=shipping.get("pin"),
+        #     phone=shipping.get("phone"),
+        #     status="Pending"
+        # )
         order = Order.objects.create(
             user=request.user,
             total_price=total_price,
             payment_method="RAZORPAY",
-            name=shipping.get("name"),
-            address=shipping.get("address"),
-            city=shipping.get("city"),
-            pin=shipping.get("pin"),
-            phone=shipping.get("phone"),
-            status="Processing"
-        )
+            name=name,
+            address=address,
+            city=city,
+            pin=pin,
+            phone=phone,
+            status="Pending"
+)
+
 
         #  BULK CREATE USED HERE ALSO
         OrderItem.objects.bulk_create([
