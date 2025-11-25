@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics,filters
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response

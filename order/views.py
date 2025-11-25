@@ -26,21 +26,7 @@ class OrderListCreateView(APIView):
         total_price = 0
         order_items_list = []
 
-        # for item in items:
-        #     try:
-        #         product = Product.objects.get(id=item['product_id'])
-        #     except Product.DoesNotExist:
-        #         return Response({"error": f"Product {item['product_id']} not found"}, status=404)
-
-        #     qty = item.get('quantity', 1)
-        #     price = product.price * qty
-        #     total_price += price
-
-        #     order_items_list.append({
-        #         "product": product,
-        #         "quantity": qty,
-        #         "price": price
-        #     })
+       
         for item in items:
             try:
                 product = Product.objects.get(id=item["product_id"])
@@ -179,21 +165,6 @@ class VerifyRazorpayPayment(APIView):
         total_price = 0
         order_items_list = []
 
-        # for item in items:
-        #     try:
-        #         product = Product.objects.get(id=item["product_id"])
-        #     except Product.DoesNotExist:
-        #         return Response({"error": "Product not found"}, status=404)
-
-        #     qty = item["quantity"]
-        #     price = product.price * qty
-        #     total_price += price
-
-        #     order_items_list.append({
-        #         "product": product,
-        #         "quantity": qty,
-        #         "price": price
-        #     })
         for item in items:
             try:
                 product = Product.objects.get(id=item["product_id"])
@@ -204,7 +175,7 @@ class VerifyRazorpayPayment(APIView):
             price = product.price * qty
             total_price += price
 
-    # 🔥 decrease stock here
+    # decrease stock here
             if product.stock < qty:
                 return Response({"error": f"Only {product.stock} left for {product.name}"}, status=400)
 
@@ -218,17 +189,7 @@ class VerifyRazorpayPayment(APIView):
             })
 
 
-        # order = Order.objects.create(
-        #     user=request.user,
-        #     total_price=total_price,
-        #     payment_method="RAZORPAY",
-        #     name=shipping.get("name"),
-        #     address=shipping.get("address"),
-        #     city=shipping.get("city"),
-        #     pin=shipping.get("pin"),
-        #     phone=shipping.get("phone"),
-        #     status="Pending"
-        # )
+     
         order = Order.objects.create(
             user=request.user,
             total_price=total_price,

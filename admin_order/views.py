@@ -30,7 +30,7 @@ class AdminOrderListView(ListAPIView):
             ).distinct()
 
         return queryset
-# views.py
+
 class AdminStatusUpdateView(APIView):
     permission_classes=[IsAdminUser]
     def patch(self, request, pk):

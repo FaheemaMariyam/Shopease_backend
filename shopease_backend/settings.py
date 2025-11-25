@@ -59,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "shopease_backend.utilities.middleware.CustomExceptionMiddleware",
+    
 ]
 
 # CORS
@@ -79,6 +81,7 @@ REST_FRAMEWORK = {
      # Default Pagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    
 }
 
 SIMPLE_JWT = {

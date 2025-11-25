@@ -33,26 +33,26 @@ class AdminUserListView(APIView):
         # Search by name
         search = request.query_params.get("search")
         if search:
-            users = users.filter(Q(name__icontains=search)| Q(id__icontains=search))
+            users = users.filter(Q(name__icontains=search)| Q(id__icontains=search))#search-input tag name in react
 
         # Pagination
         paginator = self.pagination_class()
-        result_page = paginator.paginate_queryset(users, request)
+        result_page = paginator.paginate_queryset(users, request)#paginate_queryset slices results into pages
         serializer = UserProfileSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)# get_pagi.. returns structured data
 
 class AdminDetailView(APIView):
     permission_classes=[IsAdminUser]
     def patch(self,request,pk):
         try:
-            user=User.objects.get(id=pk)
+            user=User.objects.get(id=pk)#fetch user by id
         except User.DoesNotExist:
             return Response({"detail":"user not found"},status=status.HTTP_404_NOT_FOUND)
         if user.role=="admin":
             return Response({"detail": "Admin cannot be blocked"}, status=status.HTTP_400_BAD_REQUEST)
         
         #toggling the block and unblock
-        new_status=request.data.get("blocked")
+        new_status=request.data.get("blocked")#get neww staatus from body
         if new_status is None:
             return Response({"detail":"blocked field required"},status=status.HTTP_400_BAD_REQUEST)
         user.blocked=new_status
