@@ -44,9 +44,9 @@ class AdminProductListView(APIView):
             products = products.order_by('-id')   # default
 
         # --- Pagination ---
-        paginator = self.pagination_class()
-        result_page = paginator.paginate_queryset(products, request)
-        serializer = ProductSerializer(result_page, many=True)
+        paginator = self.pagination_class()#Create paginator instance
+        result_page = paginator.paginate_queryset(products, request)#Slice queryset for that page
+        serializer = ProductSerializer(result_page, many=True)#Serialize only that page
 
         return paginator.get_paginated_response(serializer.data)
 
@@ -71,7 +71,7 @@ class AdminProductDetailView(APIView):
         serializer = AdminProductSerializer(
             product,
             data=request.data,
-            partial=True
+            partial=True #allow updates 1 field
         )
 
         if serializer.is_valid():

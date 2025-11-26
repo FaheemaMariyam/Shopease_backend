@@ -42,7 +42,7 @@ class AdminStatusUpdateView(APIView):
         new_status = request.data.get("status")
         if not new_status:
             return Response({"error": "Status is required"}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         order.status = new_status
         order.save()
 

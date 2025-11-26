@@ -32,7 +32,7 @@ class Order(models.Model):
         return f"Order {self.id} by {self.user.username}"
 
 
-class OrderItem(models.Model):
+class OrderItem(models.Model):#each product inside an Order.
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)

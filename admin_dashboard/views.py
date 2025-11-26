@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAdminUser
 from product.models import Product
 from order.models import Order
-from django.contrib.auth import get_user_model #not directly import User from its model bcz,like this it doessnt affect in future if done any changes like model name of user
+from django.contrib.auth import get_user_model #not directly import User from its model bcz,like this it doesnt affect in future if done any changes like model name of user
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -22,7 +22,7 @@ class AdminDashboardView(APIView):
         total_revenue_qs=Order.objects.aggregate(total=Sum("total_price"))#it's produce the queryset as dictionary,we only get the value of the key-total
         total_revenue=total_revenue_qs.get("total") or 0 #it get the value corresponding to the key total if nothing its 0
 
-        # Group orders by DATE and calculate total revenue per date
+        # Group orders by date and calculate total revenue per date
         revenue_qs = (
             Order.objects
     # Create a new field "date" by extracting only the DATE part from ordered_at (removes time)
