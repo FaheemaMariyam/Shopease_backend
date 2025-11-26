@@ -7,6 +7,7 @@ from shopease_user.serializer import UserProfileSerializer
 from rest_framework.pagination import PageNumberPagination
 import math
 from django.db.models import Q
+from .serializer import AdminUserDetailSerializer
 
 class UserPagination(PageNumberPagination):
     page_size = 10  # change as needed
@@ -67,3 +68,22 @@ class AdminDetailView(APIView):
             return Response({"detail": "Admin cannot be blocked"}, status=status.HTTP_400_BAD_REQUEST)
         user.delete()
         return Response({"message":"User removed successfully"},status=status.HTTP_200_OK)
+class AdminUserDetailView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        try:
+            # Prefetch orders and order items with products
+            user = User.objects.prefetch_related(
+                "order_set__items__product"
+            ).get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            serializer = AdminUserDetailSerializer(user)
+        except Exception as e:
+            # In production, log the error instead of sending raw exception
+            return Response({"error": f"Serialization failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

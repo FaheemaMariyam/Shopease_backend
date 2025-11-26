@@ -62,7 +62,7 @@ class OrderListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        orders = Order.objects.filter(user=request.user).prefetch_related('items__product')
+        orders = Order.objects.filter(user=request.user).prefetch_related('items__product').order_by('-id')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
