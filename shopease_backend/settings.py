@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     "shopease1.duckdns.org",
     "3.234.252.228",  # EC2 IP
     "localhost",       # local dev
+    "https://react-project-psi-gules.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -77,6 +78,7 @@ MIDDLEWARE = [
 # -----------------------------
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # frontend dev
+    "https://react-project-psi-gules.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
