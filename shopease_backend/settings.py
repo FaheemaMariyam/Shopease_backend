@@ -81,7 +81,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://react-project-psi-gules.vercel.app",
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
