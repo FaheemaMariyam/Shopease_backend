@@ -67,7 +67,9 @@ MIDDLEWARE = [
 # -----------------------------
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+ALLOWED_HOSTS = ["shopease1.duckdns.org", "3.234.252.228", "localhost"]
+
+CSRF_TRUSTED_ORIGINS = ["https://shopease1.duckdns.org"]
 
 # -----------------------------
 # JWT & DRF
