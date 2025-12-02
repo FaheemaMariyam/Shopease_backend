@@ -2,20 +2,23 @@ from rest_framework import serializers
 from .models import Product, Category
 
 class CategorySerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = "__all__"
 
-    def get_image(self, obj):
-        if obj.image:
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Serve correct Cloudinary HTTPS URL
+        if instance.image:
             try:
-                return obj.image.url.replace("http://", "https://")
-            except Exception:
-                return None
-        return None
+                data["image"] = instance.image.url.replace("http://", "https://")
+            except:
+                data["image"] = None
+        else:
+            data["image"] = None
 
+        return data
 
 
 
