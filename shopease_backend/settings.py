@@ -25,7 +25,7 @@ ALLOWED_HOSTS = [
     "localhost",       # local dev
 
     
-    "https://react-project-psi-gules.vercel.app",
+    "https://fh-shopease.vercel.app/",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
