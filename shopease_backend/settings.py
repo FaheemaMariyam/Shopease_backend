@@ -23,6 +23,8 @@ ALLOWED_HOSTS = [
     "shopease1.duckdns.org",
     "3.234.252.228",  # EC2 IP
     "localhost",       # local dev
+
+    
     "https://react-project-psi-gules.vercel.app",
 ]
 

@@ -19,13 +19,18 @@ from rest_framework import serializers
 from product.models import Product
 
 class AdminProductSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'stock', 'category', 'image']
+        fields = "__all__"     # include image field fully
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url.replace("http://", "https://")  # enforce HTTPS
-        return None
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        
+        if instance.image:
+            try:
+                data["image"] = instance.image.url.replace("http://", "https://")
+            except:
+                data["image"] = None
+        
+        return data
+

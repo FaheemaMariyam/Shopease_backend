@@ -11,15 +11,16 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.image:
             try:
-                return obj.image.url
+                return obj.image.url.replace("http://", "https://")
             except Exception:
                 return None
         return None
 
 
 
+
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
+    category = CategorySerializer()
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -29,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.image:
             try:
-                return obj.image.url
+                return obj.image.url.replace("http://", "https://")
             except Exception:
                 return None
         return None

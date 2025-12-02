@@ -3,8 +3,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from product.models import Product
-from product.serializer import ProductSerializer
+
+from product.models import Product,Category
+from product.serializer import ProductSerializer,CategorySerializer
 from .serializer import AdminProductSerializer
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
@@ -89,3 +90,13 @@ class AdminProductDetailView(APIView):
         product = get_object_or_404(Product, id=pk)
         product.delete()
         return Response({"message": "Product deleted successfully"})
+class CategoryUpdateView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        category = get_object_or_404(Category, id=pk)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
