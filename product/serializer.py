@@ -11,10 +11,11 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.image:
             try:
-                return obj.image.url  # CloudinaryField provides .url
+                return obj.image.url
             except Exception:
                 return None
         return None
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -28,7 +29,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.image:
             try:
-                return obj.image.url  # use .url directly
+                return obj.image.url
             except Exception:
                 return None
         return None
