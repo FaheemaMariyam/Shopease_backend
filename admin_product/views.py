@@ -46,17 +46,20 @@ class AdminProductListView(APIView):
         # --- Pagination ---
         paginator = self.pagination_class()#Create paginator instance
         result_page = paginator.paginate_queryset(products, request)#Slice queryset for that page
-        serializer = ProductSerializer(result_page, many=True)#Serialize only that page
+        serializer = AdminProductSerializer(result_page, many=True)
+#Serialize only that page
 
         return paginator.get_paginated_response(serializer.data)
 
-    def post(self,request):
-        serializer=AdminProductSerializer(data=request.data)
+    def post(self, request):
+        serializer = AdminProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message":"New product added", "product": serializer.data}, status=201)
+            return Response({"message": "Product added", "product": serializer.data}, status=201)
 
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        print("POST ERROR:", serializer.errors)  # ← IMPORTANT
+        return Response(serializer.errors, status=400)
+
 class AdminProductDetailView(APIView):
     permission_classes = [IsAdminUser]
 
