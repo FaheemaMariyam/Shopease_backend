@@ -207,3 +207,7 @@ USE_TZ = True
 # Default Auto Field
 # -----------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# 50 MB max upload
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800
+
