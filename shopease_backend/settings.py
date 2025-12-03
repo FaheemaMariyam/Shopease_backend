@@ -80,7 +80,7 @@ MIDDLEWARE = [
 # -----------------------------
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # frontend dev
-    "https://react-project-psi-gules.vercel.app",
+    "https://fh-shopease.vercel.app/",
 ]
 
 CORS_ALLOW_CREDENTIALS = False
